@@ -57,6 +57,55 @@
   </div>
 </section>
 
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow mono">Not sure yet?</span>
+      <h2>Check your eligibility now</h2>
+      <p>Answer four quick questions for an instant read — this isn't a formal decision, just a quick check before you commit time to the full application.</p>
+    </div>
+
+    <div class="quiz-shell">
+      <div class="quiz-q" data-q="1">
+        <div class="q-text">1. Do you hold, or are you actively pursuing, admission to an accredited U.S. degree program?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="selectOpt(this)">Yes</div>
+          <div class="quiz-opt" onclick="selectOpt(this)">No</div>
+        </div>
+      </div>
+      <div class="quiz-q" data-q="2">
+        <div class="q-text">2. Do you meet the minimum grade requirement for your program level?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="selectOpt(this)">Yes</div>
+          <div class="quiz-opt" onclick="selectOpt(this)">No</div>
+          <div class="quiz-opt" onclick="selectOpt(this)">Not sure</div>
+        </div>
+      </div>
+      <div class="quiz-q" data-q="3">
+        <div class="q-text">3. Are you already receiving another scholarship that fully covers tuition and accommodation for this same program?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="selectOpt(this)">Yes</div>
+          <div class="quiz-opt" onclick="selectOpt(this)">No</div>
+        </div>
+      </div>
+      <div class="quiz-q" data-q="4">
+        <div class="q-text">4. Do you meet the program's need- or merit-based criteria described in the program guide?</div>
+        <div class="quiz-options">
+          <div class="quiz-opt" onclick="selectOpt(this)">Yes</div>
+          <div class="quiz-opt" onclick="selectOpt(this)">No</div>
+          <div class="quiz-opt" onclick="selectOpt(this)">Not sure</div>
+        </div>
+      </div>
+
+      <div class="btn-row" style="justify-content:flex-start; margin-top:6px;">
+        <button class="btn btn-primary" onclick="checkEligibility()">Check eligibility</button>
+      </div>
+
+      <div class="quiz-result" id="quizResult"></div>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="wrap">
     <span>© [Year] The Meridian Scholarship — a program of Western Frontier University — Cheyenne, Wyoming, USA</span>
@@ -65,5 +114,55 @@
 </footer>
 
 <script src="nav.js"></script>
+<script>
+  function selectOpt(el){
+    const group = el.parentElement;
+    group.querySelectorAll('.quiz-opt').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function checkEligibility(){
+    const answers = {};
+    document.querySelectorAll('.quiz-q').forEach(q => {
+      const selected = q.querySelector('.quiz-opt.selected');
+      answers[q.dataset.q] = selected ? selected.textContent.trim() : null;
+    });
+
+    const result = document.getElementById('quizResult');
+
+    if(Object.values(answers).some(a => a === null)){
+      result.className = 'quiz-result unsure';
+      result.innerHTML = '<h4>Answer all four questions</h4><p>Select an option for each question above to get a read on your eligibility.</p>';
+      return;
+    }
+
+    if(answers['1'] === 'No'){
+      result.className = 'quiz-result not-eligible';
+      result.innerHTML = '<h4>Not eligible yet</h4><p>You\'ll need to hold or be actively pursuing admission to an accredited U.S. degree program before applying. Once you\'ve submitted your admission application, come back and check again.</p>';
+      return;
+    }
+
+    if(answers['3'] === 'Yes'){
+      result.className = 'quiz-result not-eligible';
+      result.innerHTML = '<h4>Not eligible for this cycle</h4><p>This scholarship is for students who don\'t already have full tuition and accommodation funding for the same program. If that changes, you\'re welcome to apply in a future cycle.</p>';
+      return;
+    }
+
+    if(answers['2'] === 'No' || answers['4'] === 'No'){
+      result.className = 'quiz-result not-eligible';
+      result.innerHTML = '<h4>May not meet all criteria</h4><p>Based on your answers, you may not currently meet all eligibility requirements. Contact us on <a href="https://wa.me/14384448381" style="color:inherit; text-decoration:underline;">WhatsApp</a> before applying — there may be more to your situation than this quick check can capture.</p>';
+      return;
+    }
+
+    if(answers['2'] === 'Not sure' || answers['4'] === 'Not sure'){
+      result.className = 'quiz-result unsure';
+      result.innerHTML = '<h4>Likely eligible — worth double-checking one thing</h4><p>You look like a good fit, but you weren\'t sure about the grade or need/merit criteria. Check the exact requirements on this page above, or message us on <a href="https://wa.me/14384448381" style="color:inherit; text-decoration:underline;">WhatsApp</a> if you\'re unsure, then go ahead and apply.</p>';
+      return;
+    }
+
+    result.className = 'quiz-result eligible';
+    result.innerHTML = '<h4>You appear eligible</h4><p>Based on your answers, you meet the core eligibility criteria. Next: check the <a href="documents.html" style="color:inherit; text-decoration:underline;">required documents</a>, then <a href="apply.html" style="color:inherit; text-decoration:underline;">start your application</a>.</p>';
+  }
+</script>
 </body>
 </html>
