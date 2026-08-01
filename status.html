@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check Status — The Meridian Scholarship (Western Frontier University)</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap nav">
+    <a href="index.html" class="brand"><span class="dot"></span>The Meridian Scholarship</a>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="coverage.html">Coverage</a>
+      <a href="eligibility.html">Eligibility</a>
+      <a href="process.html">Process</a>
+      <a href="documents.html">Documents</a>
+      <a href="faq.html">FAQ</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="status.html" class="current">Check Status</a>
+    </nav>
+    <a class="nav-cta" href="apply.html">Apply now</a>
+    <button class="nav-burger" onclick="toggleNav()" aria-label="Open menu"><span></span><span></span><span></span></button>
+  </div>
+  <nav class="nav-mobile" id="navMobile">
+    <a href="index.html">Home</a>
+    <a href="coverage.html">Coverage</a>
+    <a href="eligibility.html">Eligibility</a>
+    <a href="process.html">Process</a>
+    <a href="documents.html">Documents</a>
+    <a href="faq.html">FAQ</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="status.html" class="current">Check Status</a>
+    <a href="apply.html" class="nav-mobile-cta">Apply now</a>
+  </nav>
+</header>
+
+<div class="page-hero wrap">
+  <span class="eyebrow mono">Track your file</span>
+  <h1>Check your application status</h1>
+  <p class="sub">Enter the Application ID and email address you used when you applied.</p>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="app-shell" style="max-width:560px;">
+      <div class="app-body">
+        <div class="field"><label for="statusId">Application ID</label><input type="text" id="statusId" placeholder="e.g. MS-2026-482913"></div>
+        <div class="field"><label for="statusEmail">Email address used on your application</label><input type="email" id="statusEmail" placeholder="you@example.com"></div>
+        <div class="btn-row" style="justify-content:flex-start;">
+          <button class="btn btn-primary" onclick="checkStatus()">Check status</button>
+        </div>
+
+        <div id="statusResult" style="margin-top:28px; display:none;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© [Year] The Meridian Scholarship — a program of Western Frontier University — Cheyenne, Wyoming, USA</span>
+    <span>Questions: <a href="privacy.html" style="color:inherit;">privacy &amp; contact</a></span>
+  </div>
+</footer>
+
+<script src="nav.js"></script>
+<script>
+  const STATUS_LABELS = {
+    submitted: "Boarding pending — payment & document verification in progress",
+    payment_verified: "Payment verified — document review in progress",
+    under_review: "Documents verified — awaiting interview / committee decision",
+    awarded: "Awarded — check your email for next steps",
+    not_selected: "Not selected this cycle",
+  };
+
+  async function checkStatus(){
+    const id = document.getElementById('statusId').value.trim();
+    const email = document.getElementById('statusEmail').value.trim();
+    const resultBox = document.getElementById('statusResult');
+
+    if(!id || !email){
+      resultBox.style.display = 'block';
+      resultBox.innerHTML = '<p class="notice"><strong>Enter both your Application ID and email to check status.</strong></p>';
+      return;
+    }
+
+    resultBox.style.display = 'block';
+    resultBox.innerHTML = '<p class="notice">Checking…</p>';
+
+    try{
+      const res = await fetch('/api/check-status?id=' + encodeURIComponent(id) + '&email=' + encodeURIComponent(email));
+      const data = await res.json();
+
+      if(!data.found){
+        resultBox.innerHTML = '<p class="notice"><strong>No matching application found.</strong> Double-check your Application ID and the email address you applied with, or contact us if you believe this is an error.</p>';
+        return;
+      }
+
+      const label = STATUS_LABELS[data.status] || data.status;
+      const submitted = data.submittedAt ? new Date(data.submittedAt).toLocaleDateString() : '—';
+
+      resultBox.innerHTML = `
+        <div class="ticket" style="margin-top:0;">
+          <div class="ticket-main">
+            <div class="route">
+              <div><div class="city">Application</div><div class="code mono">${id}</div></div>
+              <div class="arc"></div>
+              <div><div class="city">Status</div><div class="code mono">CURRENT</div></div>
+            </div>
+            <div class="ticket-fields">
+              <div><div class="f-label">Submitted</div><div class="f-value">${submitted}</div></div>
+              <div><div class="f-label">Current stage</div><div class="f-value">${label}</div></div>
+            </div>
+          </div>
+        </div>`;
+    }catch(err){
+      resultBox.innerHTML = '<p class="notice"><strong>Something went wrong checking your status.</strong> Please try again in a moment, or contact us.</p>';
+    }
+  }
+</script>
+
+</body>
+</html>

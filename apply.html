@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apply — The Meridian Scholarship (Western Frontier University)</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap nav">
+    <a href="index.html" class="brand"><span class="dot"></span>The Meridian Scholarship</a>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="coverage.html">Coverage</a>
+      <a href="eligibility.html">Eligibility</a>
+      <a href="process.html">Process</a>
+      <a href="documents.html">Documents</a>
+      <a href="faq.html">FAQ</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="status.html">Check Status</a>
+    </nav>
+    <a class="nav-cta" href="apply.html">Apply now</a>
+    <button class="nav-burger" onclick="toggleNav()" aria-label="Open menu"><span></span><span></span><span></span></button>
+  </div>
+  <nav class="nav-mobile" id="navMobile">
+    <a href="index.html">Home</a>
+    <a href="coverage.html">Coverage</a>
+    <a href="eligibility.html">Eligibility</a>
+    <a href="process.html">Process</a>
+    <a href="documents.html">Documents</a>
+    <a href="faq.html">FAQ</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="status.html">Check Status</a>
+    <a href="apply.html" class="nav-mobile-cta">Apply now</a>
+  </nav>
+</header>
+
+<div class="page-hero wrap">
+  <span class="eyebrow mono">Ready when you are</span>
+  <h1>Apply</h1>
+  <p class="sub">Four short steps. Have your documents ready before you start — you can't save and come back mid-way in this version.</p>
+  <div class="countdown" id="countdown" style="margin-top:24px;">
+    <span class="cd-label">Gate closes in</span>
+    <div class="cd-units">
+      <div class="cd-unit"><div class="cd-num" id="cdDays">--</div><div class="cd-word">Days</div></div>
+      <div class="cd-unit"><div class="cd-num" id="cdHours">--</div><div class="cd-word">Hrs</div></div>
+      <div class="cd-unit"><div class="cd-num" id="cdMinutes">--</div><div class="cd-word">Min</div></div>
+      <div class="cd-unit"><div class="cd-num" id="cdSeconds">--</div><div class="cd-word">Sec</div></div>
+    </div>
+  </div>
+</div>
+
+<section style="padding-top:20px;">
+  <div class="wrap">
+    <div class="app-shell">
+      <div class="app-steps">
+        <div class="app-step active" data-step="1">1 · Your details</div>
+        <div class="app-step" data-step="2">2 · Documents</div>
+        <div class="app-step" data-step="3">3 · Review & fee</div>
+        <div class="app-step" data-step="4">4 · Confirmation</div>
+      </div>
+
+      <div class="app-body">
+        <form name="scholarship-application" method="POST" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data" id="applicationForm">
+        <input type="hidden" name="form-name" value="scholarship-application">
+        <input type="hidden" name="application-id" id="applicationIdField">
+        <p class="hidden-field"><label>Leave this empty: <input name="bot-field"></label></p>
+
+        <!-- STEP 1 -->
+        <div class="step-panel" id="panel-1">
+          <div class="row2">
+            <div class="field"><label for="fname">Full name</label><input type="text" id="fname" name="full-name" placeholder="As it appears on your passport"></div>
+            <div class="field"><label for="email">Email address</label><input type="email" id="email" name="email" placeholder="you@example.com"></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label for="phone">Phone number</label><input type="tel" id="phone" name="phone" placeholder="+___ ___ ___ ___"></div>
+            <div class="field"><label for="country">Country of residence</label><input type="text" id="country" name="country" placeholder="Country"></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label for="school">Current school / institution</label><input type="text" id="school" name="school" placeholder="Name of school"></div>
+            <div class="field"><label for="field">Intended field of study</label><input type="text" id="field" name="field-of-study" placeholder="e.g. Computer Science"></div>
+          </div>
+          <div class="field"><label for="statement">Personal statement (paste or summarize — under 800 words)</label><textarea id="statement" name="personal-statement" placeholder="Why this program, why this field, why now..."></textarea></div>
+          <div class="btn-row"><span></span><button class="btn btn-primary" type="button" onclick="goStep(2)">Continue to documents</button></div>
+        </div>
+
+        <!-- STEP 2 -->
+        <div class="step-panel" id="panel-2" style="display:none;">
+          <div class="field"><label>Academic transcripts</label>
+            <div class="upload"><input type="file" name="doc-transcripts" onchange="markUploaded(this)"><span class="status"></span></div>
+          </div>
+          <div class="field"><label>Proof of U.S. admission (or application in progress)</label>
+            <div class="upload"><input type="file" name="doc-admission-proof" onchange="markUploaded(this)"><span class="status"></span></div>
+          </div>
+          <div class="field"><label>Government ID or passport</label>
+            <div class="upload"><input type="file" name="doc-id" onchange="markUploaded(this)"><span class="status"></span></div>
+          </div>
+          <div class="field"><label>Recommendation letter</label>
+            <div class="upload"><input type="file" name="doc-recommendation" onchange="markUploaded(this)"><span class="status"></span></div>
+          </div>
+          <div class="field"><label>Proof of English proficiency (if applicable)</label>
+            <div class="upload"><input type="file" name="doc-english-proficiency" onchange="markUploaded(this)"><span class="status"></span></div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-ghost" type="button" onclick="goStep(1)">Back</button>
+            <button class="btn btn-primary" type="button" onclick="goStep(3)">Continue to review</button>
+          </div>
+        </div>
+
+        <!-- STEP 3 -->
+        <div class="step-panel" id="panel-3" style="display:none;">
+          <ul class="review-list" id="reviewList"></ul>
+
+          <div class="fee-box" style="margin-top:24px;">
+            <span>Application processing fee</span>
+            <span class="amt">5,000 F CFA</span>
+          </div>
+
+          <div class="dial-box">
+            <div class="dial-label">Step 1 — Send the fee by Mobile Money</div>
+            <div class="dial-code mono" id="dialCode">*126*9*673714739*5000#</div>
+            <button class="dial-copy" onclick="copyDial()" type="button">Copy code</button>
+            <ol class="dial-steps">
+              <li>Dial the code above on the phone you'll pay from, then press call/send.</li>
+              <li>Confirm the recipient name shown matches <strong>Western Frontier University</strong> before you send. If it shows a different or personal name, stop and contact us — do not send the money.</li>
+              <li>You'll receive an SMS confirmation with a transaction ID once the transfer completes.</li>
+            </ol>
+          </div>
+
+          <div class="row2" style="margin-top:20px;">
+            <div class="field"><label for="txnId">Step 2 — Transaction ID from the confirmation SMS</label><input type="text" id="txnId" name="transaction-id" placeholder="e.g. MP240730.1234.A56789" oninput="checkProofReady()"></div>
+            <div class="field"><label>Step 3 — Upload proof of payment</label>
+              <div class="upload"><input type="file" id="proofFile" name="payment-proof" onchange="markUploaded(this); checkProofReady();"><span class="status"></span></div>
+            </div>
+          </div>
+
+          <p class="notice">This fee covers document verification and file processing. <strong>It is non-refundable and does not guarantee selection.</strong> Payment is verified manually by our team — your fee is not confirmed as "paid" until we match your transaction ID against the mobile money statement, usually within a few business days. If the fee would prevent you from applying, contact us before paying — fee waivers are available for demonstrated financial hardship.</p>
+
+          <div class="btn-row">
+            <button class="btn btn-ghost" type="button" onclick="goStep(2)">Back</button>
+            <button class="btn btn-primary" id="payBtn" type="button" onclick="submitApp()" disabled>Submit application for payment review</button>
+          </div>
+        </div>
+        </form>
+
+        <!-- STEP 4 -->
+        <div class="step-panel" id="panel-4" style="display:none;">
+          <div class="ticket" style="margin-top:0;">
+            <div class="ticket-main">
+              <div class="route">
+                <div><div class="city">Application</div><div class="code mono">RECEIVED</div></div>
+                <div class="arc"></div>
+                <div><div class="city">Under review</div><div class="code mono">STATUS</div></div>
+              </div>
+              <div class="ticket-fields">
+                <div><div class="f-label">Application ID</div><div class="f-value confirm-id" id="appId">—</div></div>
+                <div><div class="f-label">Fee</div><div class="f-value">Verification pending</div></div>
+                <div><div class="f-label">Next checkpoint</div><div class="f-value">Payment & document screening</div></div>
+                <div><div class="f-label">Decisions by</div><div class="f-value">[Date]</div></div>
+              </div>
+            </div>
+            <div class="ticket-stub">
+              <div><div class="stub-label">Status</div><div class="stub-big" style="font-size:1.6rem;">Boarding<br>pending</div></div>
+            </div>
+          </div>
+          <p class="notice" style="margin-top:20px;">Save your Application ID and transaction ID. Our team will match your payment against the mobile money statement and email you once it's confirmed — this can take a few business days. Your file only moves to document review after payment is verified. You can <a href="status.html" style="color:var(--ink); text-decoration:underline;">check your status here</a> any time using this ID and your email.</p>
+          <div class="btn-row"><a href="index.html" style="text-decoration:none; color:var(--ink-soft); font-size:0.9rem;">← Back to home</a><span></span></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>© [Year] The Meridian Scholarship — a program of Western Frontier University — Cheyenne, Wyoming, USA</span>
+    <span>Questions: <a href="privacy.html" style="color:inherit;">privacy & contact</a></span>
+  </div>
+</footer>
+
+<script>
+  function goStep(n){
+    for(let i=1;i<=4;i++){
+      document.getElementById('panel-'+i).style.display = (i===n) ? 'block' : 'none';
+      const stepEl = document.querySelector('.app-step[data-step="'+i+'"]');
+      stepEl.classList.remove('active','done');
+      if(i===n) stepEl.classList.add('active');
+      if(i<n) stepEl.classList.add('done');
+    }
+    if(n===3) buildReview();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function markUploaded(input){
+    const status = input.parentElement.querySelector('.status');
+    status.textContent = input.files.length ? '✓ ' + input.files[0].name : '';
+  }
+
+  function checkProofReady(){
+    const txnId = document.getElementById('txnId').value.trim();
+    const hasFile = document.getElementById('proofFile').files.length > 0;
+    document.getElementById('payBtn').disabled = !(txnId.length > 3 && hasFile);
+  }
+
+  function copyDial(){
+    const code = document.getElementById('dialCode').textContent;
+    navigator.clipboard.writeText(code).then(()=>{
+      const btn = document.querySelector('.dial-copy');
+      const original = btn.textContent;
+      btn.textContent = 'Copied';
+      setTimeout(()=>{ btn.textContent = original; }, 1500);
+    });
+  }
+
+  function buildReview(){
+    const fields = [
+      ['Full name', document.getElementById('fname').value || '—'],
+      ['Email', document.getElementById('email').value || '—'],
+      ['Country', document.getElementById('country').value || '—'],
+      ['Current school', document.getElementById('school').value || '—'],
+      ['Field of study', document.getElementById('field').value || '—'],
+    ];
+    const list = document.getElementById('reviewList');
+    list.innerHTML = '';
+    fields.forEach(([label,val])=>{
+      const li = document.createElement('li');
+      li.innerHTML = '<span>'+label+'</span><span>'+val+'</span>';
+      list.appendChild(li);
+    });
+  }
+
+  function submitApp(){
+    const btn = document.getElementById('payBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    const id = 'MS-' + new Date().getFullYear() + '-' + Math.floor(100000 + Math.random()*900000);
+    document.getElementById('applicationIdField').value = id;
+
+    const email = document.getElementById('email').value.trim();
+    const fullName = document.getElementById('fname').value.trim();
+
+    const form = document.getElementById('applicationForm');
+    const formData = new FormData(form);
+
+    fetch('/', { method: 'POST', body: formData })
+      .then((res) => {
+        if(!res.ok) throw new Error('Submit failed');
+        // Also register the application for status lookups. Non-blocking:
+        // if this fails, the Netlify Forms submission above already succeeded.
+        return fetch('/api/create-application', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ applicationId: id, email, fullName }),
+        }).catch(() => {});
+      })
+      .then(() => {
+        document.getElementById('appId').textContent = id;
+        goStep(4);
+      })
+      .catch(() => {
+        btn.disabled = false;
+        btn.textContent = 'Submit application for payment review';
+        alert('Something went wrong submitting your application. Please check your connection and try again, or contact us directly.');
+      });
+  }
+</script>
+
+<script src="nav.js"></script>
+<script src="countdown.js"></script>
+</body>
+</html>

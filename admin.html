@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — The Meridian Scholarship</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .admin-wrap{ max-width:1000px; margin:0 auto; padding:40px 24px 80px; }
+  .admin-lock{ max-width:380px; margin:80px auto; text-align:center; }
+  .admin-lock input{ width:100%; padding:12px; border:1px solid var(--line); border-radius:3px; margin:16px 0; font-family:inherit; }
+  table.admin-table{ width:100%; border-collapse:collapse; margin-top:24px; font-size:0.88rem; }
+  table.admin-table th{ text-align:left; padding:10px 12px; background:var(--ink); color:var(--paper); font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; }
+  table.admin-table td{ padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+  table.admin-table tr:hover td{ background:var(--paper-dim); }
+  table.admin-table select{ padding:6px 8px; border:1px solid var(--line); border-radius:3px; font-family:inherit; font-size:0.85rem; }
+  .admin-id{ font-family:'IBM Plex Mono',monospace; font-size:0.82rem; }
+  .admin-refresh{ margin-top:20px; }
+  .admin-empty{ color:var(--slate); padding:40px 0; text-align:center; }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap nav">
+    <a href="index.html" class="brand"><span class="dot"></span>The Meridian Scholarship</a>
+    <nav class="nav-links"><a href="index.html">← Back to site</a></nav>
+  </div>
+</header>
+
+<div class="admin-wrap">
+
+  <div id="lockScreen" class="admin-lock">
+    <h1 style="font-size:1.4rem;">Admin access</h1>
+    <p style="color:var(--slate); font-size:0.9rem;">Staff only. Enter the admin password to review applications.</p>
+    <input type="password" id="adminPasswordInput" placeholder="Admin password" onkeydown="if(event.key==='Enter') unlock()">
+    <button class="btn btn-primary" onclick="unlock()" style="width:100%;">Unlock</button>
+    <p id="lockError" class="notice" style="color:var(--red); display:none;"></p>
+  </div>
+
+  <div id="dashboard" style="display:none;">
+    <h1 style="font-size:1.4rem;">Applications</h1>
+    <p style="color:var(--slate); font-size:0.9rem;">Review submissions and update status. Status changes are visible to applicants immediately on the status-check page.</p>
+    <button class="btn btn-ghost admin-refresh" onclick="loadApplications()">Refresh</button>
+    <div id="tableContainer"></div>
+  </div>
+
+</div>
+
+<script>
+  const STATUS_OPTIONS = [
+    ["submitted", "Submitted"],
+    ["payment_verified", "Payment verified"],
+    ["under_review", "Under review"],
+    ["awarded", "Awarded"],
+    ["not_selected", "Not selected"],
+  ];
+
+  function getPassword(){
+    return sessionStorage.getItem('adminPassword') || '';
+  }
+
+  function unlock(){
+    const pw = document.getElementById('adminPasswordInput').value;
+    if(!pw){ return; }
+    sessionStorage.setItem('adminPassword', pw);
+    loadApplications();
+  }
+
+  async function loadApplications(){
+    const pw = getPassword();
+    const errorBox = document.getElementById('lockError');
+
+    try{
+      const res = await fetch('/api/list-applications', {
+        headers: { 'x-admin-password': pw }
+      });
+
+      if(res.status === 401){
+        sessionStorage.removeItem('adminPassword');
+        document.getElementById('lockScreen').style.display = 'block';
+        document.getElementById('dashboard').style.display = 'none';
+        errorBox.style.display = 'block';
+        errorBox.textContent = 'Incorrect password.';
+        return;
+      }
+
+      if(res.status === 503){
+        errorBox.style.display = 'block';
+        errorBox.textContent = 'Admin access is not configured yet — set the ADMIN_PASSWORD environment variable in Netlify.';
+        return;
+      }
+
+      if(!res.ok) throw new Error('Failed to load');
+
+      const data = await res.json();
+      document.getElementById('lockScreen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      renderTable(data.applications || []);
+    }catch(err){
+      errorBox.style.display = 'block';
+      errorBox.textContent = 'Something went wrong loading applications. Please try again.';
+    }
+  }
+
+  function renderTable(applications){
+    const container = document.getElementById('tableContainer');
+
+    if(applications.length === 0){
+      container.innerHTML = '<div class="admin-empty">No applications yet.</div>';
+      return;
+    }
+
+    let html = '<table class="admin-table"><thead><tr><th>Application ID</th><th>Name</th><th>Email</th><th>Submitted</th><th>Status</th></tr></thead><tbody>';
+
+    applications.forEach(app => {
+      const submitted = app.submittedAt ? new Date(app.submittedAt).toLocaleString() : '—';
+      let options = '';
+      STATUS_OPTIONS.forEach(([value, label]) => {
+        options += `<option value="${value}" ${app.status === value ? 'selected' : ''}>${label}</option>`;
+      });
+
+      html += `<tr>
+        <td class="admin-id">${app.id}</td>
+        <td>${app.fullName || '—'}</td>
+        <td>${app.email || '—'}</td>
+        <td>${submitted}</td>
+        <td><select onchange="updateStatus('${app.id}', this.value, this)">${options}</select></td>
+      </tr>`;
+    });
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+  }
+
+  async function updateStatus(id, status, selectEl){
+    const pw = getPassword();
+    selectEl.disabled = true;
+
+    try{
+      const res = await fetch('/api/update-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-password': pw },
+        body: JSON.stringify({ applicationId: id, status }),
+      });
+      if(!res.ok) throw new Error('Update failed');
+    }catch(err){
+      alert('Could not update status for ' + id + '. Please try again.');
+    }finally{
+      selectEl.disabled = false;
+    }
+  }
+
+  // Auto-load if a password is already stored for this session.
+  if(getPassword()){
+    loadApplications();
+  }
+</script>
+
+</body>
+</html>
